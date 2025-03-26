@@ -481,7 +481,7 @@ pub struct PayjoinProposal {
 
 impl PayjoinProposal {
     #[cfg(feature = "_multiparty")]
-    // TODO hack to get multi party working. A better solution would be to allow extract_v2_req to be separate from the rest of the v2 context
+    // TODO hack to get multi party working. A better solution would be to allow extract_req to be separate from the rest of the v2 context
     pub(crate) fn new(v1: v1::PayjoinProposal, context: SessionContext) -> Self {
         Self { v1, context }
     }
@@ -496,7 +496,20 @@ impl PayjoinProposal {
 
     pub fn psbt(&self) -> &Psbt { self.v1.psbt() }
 
-    pub fn extract_v2_req(
+    /// Extracts a Payjoin request, preparing the appropriate payload and target resource.
+    ///
+    /// This function handles both v2 payloads and backwards-compatible v1 payloads.
+    /// It encapsulates the request using OHTTP and returns the prepared request and context.
+    ///
+    /// # Arguments
+    ///
+    /// * `ohttp_relay` - The URL of the OHTTP relay to be used for encapsulation.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a tuple of the prepared `Request` and `ohttp::ClientResponse` context,
+    /// or an `Error` if the operation fails.
+    pub fn extract_req(
         &mut self,
         ohttp_relay: impl IntoUrl,
     ) -> Result<(Request, ohttp::ClientResponse), Error> {

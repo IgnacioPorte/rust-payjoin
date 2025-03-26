@@ -335,7 +335,7 @@ mod integration {
                     .expect("proposal should exist");
                 let mut payjoin_proposal = handle_directory_proposal(&receiver, proposal, None)?;
                 assert!(!payjoin_proposal.is_output_substitution_disabled());
-                let (req, ctx) = payjoin_proposal.extract_v2_req(&mock_ohttp_relay)?;
+                let (req, ctx) = payjoin_proposal.extract_req(&mock_ohttp_relay)?;
                 let response = agent
                     .post(req.url)
                     .header("Content-Type", req.content_type)
@@ -511,7 +511,7 @@ mod integration {
                     assert!(payjoin_proposal.is_output_substitution_disabled());
                     // Respond with payjoin psbt within the time window the sender is willing to wait
                     // this response would be returned as http response to the sender
-                    let (req, ctx) = payjoin_proposal.extract_v2_req(&mock_ohttp_relay)?;
+                    let (req, ctx) = payjoin_proposal.extract_req(&mock_ohttp_relay)?;
                     let response = agent_clone.post(req.url).body(req.body).send().await?;
                     payjoin_proposal
                         .process_res(&response.bytes().await?, ctx)
@@ -762,7 +762,7 @@ mod integration {
 
                 // Send the payjoin proposals to the senders
                 for mut proposal in multi_sender_payjoin_proposal.sender_iter() {
-                    let (req, ctx) = proposal.extract_v2_req(&directory)?;
+                    let (req, ctx) = proposal.extract_req(&directory)?;
                     let response = agent
                         .post(req.url)
                         .header("Content-Type", req.content_type)
